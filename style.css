@@ -574,6 +574,37 @@ body.bc-ql-body {
     padding: 20px;
 }
 
+.bc-ql-popup-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.bc-ql-popup-info {
+    flex: 1;
+}
+
+.bc-ql-popup-logo {
+    width: 48px;
+    height: 48px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    overflow: hidden;
+    background: #fff;
+    border: 1px solid var(--bc-ql-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.bc-ql-popup-logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
 .bc-ql-map-popup .bc-ql-popup-name {
     font-size: 15px;
     font-weight: 700;
@@ -584,7 +615,7 @@ body.bc-ql-body {
 .bc-ql-map-popup .bc-ql-popup-addr {
     font-size: 13px;
     color: var(--bc-ql-text-muted);
-    margin-bottom: 16px;
+    margin-bottom: 0;
 }
 
 .bc-ql-map-popup .bc-ql-b-group {
