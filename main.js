@@ -169,24 +169,16 @@ function bcQlPlaceMarkers() {
 
         const name = box.querySelector('.bc-ql-placename')?.textContent || '';
         const addr = box.querySelector('.bc-ql-address')?.textContent || '';
-        const imgSrc = box.querySelector('.bc-ql-place-logo img')?.src || '';
 
         const marker = L.marker([lat, lng], { icon: bcQlMakeIcon(), title: name });
         marker.addTo(bcQlMap);
         bcQlMarkers[index] = marker;
 
-        const logoHTML = imgSrc ? `<div class="bc-ql-popup-logo"><img src="${imgSrc}" alt="Logo"></div>` : '';
-
         // Popup content for marker
         const popupHTML = `
             <div class="bc-ql-map-popup">
-                <div class="bc-ql-popup-header">
-                    <div class="bc-ql-popup-info">
-                        <p class="bc-ql-popup-name">${name}</p>
-                        <p class="bc-ql-popup-addr">${addr}</p>
-                    </div>
-                    ${logoHTML}
-                </div>
+                <p class="bc-ql-popup-name">${name}</p>
+                <p class="bc-ql-popup-addr">${addr}</p>
                 <div class="bc-ql-b-group">
                     <a class="bc-ql-btn-primary" href="#">Booking</a>
                     <a class="bc-ql-btn-secondary" href="#">View Details</a>
