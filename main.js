@@ -13,7 +13,6 @@ let bcQlMarkers = [];
 let bcQlUserLocation = null;
 let bcQlSearchedLocation = null;
 let bcQlSearchDebounce = null;
-let bcQlActiveFilterKm = 'all';
 
 /* ──────────────────────────────────────────────────────────
    HELPERS
@@ -74,24 +73,13 @@ function bcQlApplyFilters() {
         // Area filter
         const areaOk = areaVal === 'all' || boxArea === areaVal;
 
-        // Radius filter
-        let radiusOk = true;
-        if (bcQlActiveFilterKm !== 'all' && center && bcQlMarkers[i]) {
-            const dist = bcQlHaversine(center, bcQlMarkers[i].getLatLng());
-            radiusOk = dist <= bcQlActiveFilterKm;
-        }
-
-        bcQlSetBoxVisible(box, i, textOk && areaOk && radiusOk);
+        bcQlSetBoxVisible(box, i, textOk && areaOk);
     });
 
     bcQlUpdateCount();
 }
 
 function bcQlFilterByText(term) {
-    bcQlActiveFilterKm = 'all'; 
-    document.querySelectorAll('.bc-ql-filter-option').forEach(o => o.classList.remove('active'));
-    document.querySelectorAll('.bc-ql-filter-option')[0]?.classList.add('active');
-
     bcQlApplyFilters();
 
     const boxes = bcQlGetBoxes();
@@ -266,27 +254,7 @@ function bcQlInitMap() {
     setTimeout(() => bcQlMap.invalidateSize(), 100);
 }
 
-/* ──────────────────────────────────────────────────────────
-   SWIPER
-   ────────────────────────────────────────────────────────── */
-function bcQlInitFilterSwiper() {
-    let swiper = null;
-    function init() {
-        if (window.innerWidth <= 768 && !swiper) {
-            swiper = new Swiper('.bc-ql-filter-swiper', {
-                slidesPerView: 'auto',
-                spaceBetween: 8,
-                freeMode: true,
-            });
-        }
-        if (window.innerWidth > 768 && swiper) {
-            swiper.destroy(true, true);
-            swiper = null;
-        }
-    }
-    init();
-    window.addEventListener('resize', init);
-}
+
 
 /* ──────────────────────────────────────────────────────────
    MAGNETIC
@@ -310,24 +278,11 @@ function bcQlInitMagnetic() {
 document.addEventListener('DOMContentLoaded', () => {
 
     bcQlInitMap();
-    bcQlInitFilterSwiper();
     bcQlInitMagnetic();
 
     /* ── Area Filter ── */
     document.getElementById('bc-ql-area-select')?.addEventListener('change', () => {
         bcQlApplyFilters();
-    });
-
-    /* ── Distance Filter ── */
-    document.querySelectorAll('.bc-ql-filter-option').forEach(option => {
-        option.addEventListener('click', function () {
-            document.querySelectorAll('.bc-ql-filter-option').forEach(o => o.classList.remove('active'));
-            this.classList.add('active');
-
-            const txt = this.textContent.trim().toLowerCase();
-            bcQlActiveFilterKm = (txt === 'all') ? 'all' : parseInt(txt);
-            bcQlApplyFilters();
-        });
     });
 
     /* ── Search Input ── */
@@ -377,6 +332,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.getElementById('bc-ql-reopen-list')?.addEventListener('click', () => {
         bcQlToggleListView(false);
+    });
+
+    document.getElementById('bc-ql-show-map')?.addEventListener('click', () => {
+        bcQlToggleListView(true);
+        // On mobile, if they just want to see the map, pan to the active one or a default view.
+        if (window.innerWidth <= 991) {
+            bcQlMap.invalidateSize();
+        }
     });
 
 });

@@ -326,65 +326,7 @@ body.bc-ql-body {
     pointer-events: none;
 }
 
-/* Distance Filter */
-.bc-ql-distance-filter {
-    padding: 14px 16px;
-    border-top: 1px dashed var(--bc-ql-border);
-}
 
-.bc-ql-info-filter {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    margin-bottom: 10px;
-    gap: 8px;
-}
-
-.bc-ql-first-info {
-    font-size: 11.5px;
-    color: var(--bc-ql-text-muted);
-    line-height: 1.4;
-}
-
-.bc-ql-counting {
-    font-size: 12px;
-    font-weight: 700;
-    color: var(--bc-ql-green-accent);
-    white-space: nowrap;
-}
-
-/* Swiper Filter Pills */
-.bc-ql-selection-filter {
-    overflow: hidden;
-}
-
-.bc-ql-filter-option {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 6px 14px;
-    border-radius: 99px;
-    border: 1.5px solid var(--bc-ql-border);
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--bc-ql-text-mid);
-    cursor: pointer;
-    white-space: nowrap;
-    user-select: none;
-    transition: background .25s, border-color .25s, color .25s;
-    width: auto !important; /* override swiper */
-}
-
-.bc-ql-filter-option:hover {
-    border-color: var(--bc-ql-green-accent);
-    color: var(--bc-ql-green-accent);
-}
-
-.bc-ql-filter-option.active {
-    background: var(--bc-ql-green-deep);
-    border-color: var(--bc-ql-green-deep);
-    color: var(--bc-ql-white);
-}
 
 /* ── Place List ─────────────────────────────────────────── */
 .bc-ql-place-collection {
@@ -518,14 +460,12 @@ body.bc-ql-body {
     height: 100%;
 }
 
-/* Floating Find Property Button */
-.bc-ql-fab-find {
+/* Floating Buttons (Toggle) */
+.bc-ql-fab-find,
+.bc-ql-fab-map {
     position: fixed;
     bottom: 30px;
     left: 50%;
-    transform: translate3d(-50%, 100px, 0);
-    opacity: 0;
-    pointer-events: none;
     z-index: 9999;
     display: flex;
     align-items: center;
@@ -546,20 +486,39 @@ body.bc-ql-body {
                 box-shadow 0.3s;
 }
 
-.bc-ql-fab-find:hover {
+.bc-ql-fab-find:hover,
+.bc-ql-fab-map:hover {
     box-shadow: 0 12px 40px rgba(11,56,41,0.45);
     transform: translate3d(-50%, -2px, 0) !important;
 }
 
-.bc-ql-fab-find svg {
+.bc-ql-fab-find svg,
+.bc-ql-fab-map svg {
     width: 18px; height: 18px;
 }
 
-/* Show FAB when List is Closed */
+/* Base Visibility Logic */
+.bc-ql-fab-find {
+    transform: translate3d(-50%, 100px, 0);
+    opacity: 0;
+    pointer-events: none;
+}
+.bc-ql-fab-map {
+    transform: translate3d(-50%, 0, 0);
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* Visibility when List is Closed */
 .bc-ql-maps.bc-ql-list-closed .bc-ql-fab-find {
     transform: translate3d(-50%, 0, 0);
     opacity: 1;
     pointer-events: auto;
+}
+.bc-ql-maps.bc-ql-list-closed .bc-ql-fab-map {
+    transform: translate3d(-50%, 100px, 0);
+    opacity: 0;
+    pointer-events: none;
 }
 
 /* ── Leaflet overrides ──────────────────────────────────── */

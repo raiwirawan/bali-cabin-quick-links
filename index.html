@@ -7,8 +7,7 @@
 
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css">
-    <!-- Swiper CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css">
+
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -25,16 +24,7 @@
         <div class="bc-ql-header-inner">
             <!-- Logo -->
             <div class="bc-ql-logo-wrapper">
-                <svg class="bc-ql-logo-icon" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M50 15C50 15 65 30 50 50C35 30 50 15 50 15Z" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/>
-                    <path d="M50 85C50 85 35 70 50 50C65 70 50 85 50 85Z" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/>
-                    <path d="M15 50C15 50 30 35 50 50C30 65 15 50 15 50Z" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/>
-                    <path d="M85 50C85 50 70 65 50 50C70 35 85 50 85 50Z" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/>
-                    <path d="M30 30C30 30 45 40 50 50C40 45 30 30 30 30Z" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/>
-                    <path d="M70 70C70 70 55 60 50 50C60 55 70 70 70 70Z" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/>
-                    <path d="M70 30C70 30 55 40 50 50C60 45 70 30 70 30Z" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/>
-                    <path d="M30 70C30 70 45 60 50 50C40 55 30 70 30 70Z" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/>
-                </svg>
+
                 <h1 class="bc-ql-logo-text">BALI CABIN</h1>
             </div>
 
@@ -108,22 +98,7 @@
                     <svg class="bc-ql-select-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
                 </div>
 
-                <!-- Distance Filter -->
-                <div class="bc-ql-distance-filter">
-                    <div class="bc-ql-info-filter">
-                        <p class="bc-ql-first-info">Distance from your location:</p>
-                        <p class="bc-ql-counting">— properties</p>
-                    </div>
-                    <div class="bc-ql-selection-filter swiper bc-ql-filter-swiper">
-                        <div class="swiper-wrapper">
-                            <div class="swiper-slide bc-ql-filter-option active">All</div>
-                            <div class="swiper-slide bc-ql-filter-option">5 km</div>
-                            <div class="swiper-slide bc-ql-filter-option">10 km</div>
-                            <div class="swiper-slide bc-ql-filter-option">20 km</div>
-                            <div class="swiper-slide bc-ql-filter-option">50 km</div>
-                        </div>
-                    </div>
-                </div>
+
             </div>
 
             <!-- Place Collection -->
@@ -234,13 +209,19 @@
         <!-- Map Area -->
         <div class="bc-ql-map-view">
             <div class="bc-ql-map-canvas" id="bc-ql-mapbox"></div>
-            
-            <!-- Reopen Modal Button -->
-            <button class="bc-ql-fab-find" id="bc-ql-reopen-list" type="button">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                Find Property
-            </button>
         </div>
+
+        <!-- Reopen Modal Button -->
+        <button class="bc-ql-fab-find" id="bc-ql-reopen-list" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            Find Property
+        </button>
+
+        <!-- Show Map Button (when list is open) -->
+        <button class="bc-ql-fab-map" id="bc-ql-show-map" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"></polygon><line x1="9" y1="3" x2="9" y2="18"></line><line x1="15" y1="6" x2="15" y2="21"></line></svg>
+            Show Map
+        </button>
 
     </section><!-- /.bc-ql-maps -->
 
@@ -248,7 +229,6 @@
          Scripts
          ============================================================ -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
     <script src="main.js"></script>
 </body>
 </html>
