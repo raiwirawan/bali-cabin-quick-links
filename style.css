@@ -356,6 +356,12 @@ body.bc-ql-body {
                 background .3s var(--bc-ql-ease-out);
     position: relative;
     overflow: hidden;
+    
+    /* New Flex Layout for Logo */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
 }
 
 .bc-ql-place-box::before {
@@ -370,19 +376,45 @@ body.bc-ql-body {
 
 .bc-ql-place-box:hover,
 .bc-ql-place-box.active {
-    border-color: var(--bc-ql-green-accent);
-    box-shadow: 0 6px 20px rgba(11,56,41,.12);
+    border-color: var(--bc-ql-green-deep);
+    box-shadow: 0 12px 32px rgba(11,56,41,0.15);
 }
 
 .bc-ql-place-box.active::before { opacity: 1; }
 .bc-ql-place-box.active .bc-ql-placename,
 .bc-ql-place-box.active .bc-ql-address { color: var(--bc-ql-white); }
 
-.bc-ql-placename,
-.bc-ql-address,
-.bc-ql-b-group {
+.bc-ql-place-content {
+    flex: 1;
     position: relative;
     z-index: 1;
+}
+
+.bc-ql-place-logo {
+    width: 64px;
+    height: 64px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: #ffffff;
+    border: 1px solid var(--bc-ql-border);
+    overflow: hidden;
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform .3s var(--bc-ql-ease-spring), border-color .3s;
+}
+
+.bc-ql-place-box.active .bc-ql-place-logo {
+    border-color: rgba(255,255,255,0.4);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+}
+
+.bc-ql-place-logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
 .bc-ql-placename {
