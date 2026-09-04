@@ -50,7 +50,7 @@
                     <div class="bc-ql-action-icon">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
                     </div>
-                    <span class="bc-ql-action-text">Whatsapp</span>
+                    <span class="bc-ql-action-text">Free Consultations</span>
                 </a>
                 <a href="#" class="bc-ql-action-card bc-ql-magnetic" style="--anim-delay:0.3s">
                     <div class="bc-ql-action-icon">
@@ -69,46 +69,59 @@
     </header>
 
     <!-- ============================================================
-         MAP SECTION — Desktop (map left, sidebar right)
+         MAP SECTION
          ============================================================ -->
     <section class="bc-ql-maps">
 
-        <!-- Leaflet Map -->
-        <div class="bc-ql-map-canvas" id="bc-ql-mapbox"></div>
-
-        <!-- Sidebar / Interactive Box -->
-        <div class="bc-ql-interactive-box" id="bc-ql-interactive-box">
-            <p class="bc-ql-box-heading">
-                Find a Property
-                <span class="bc-ql-dropdown-toggle" id="bc-ql-dropdown-toggle">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-                </span>
-            </p>
-
-            <!-- Search -->
-            <div class="bc-ql-search-box">
-                <input class="bc-ql-name-filter" id="bc-ql-search-desktop" type="text" placeholder="Search by name or area…" autocomplete="off">
-                <button class="bc-ql-icon-locate" id="bc-ql-locate-me" title="Detect my location" type="button">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/><line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/></svg>
-                </button>
-                <button class="bc-ql-icon-search" type="button">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <!-- Sidebar / Modal: Find Property -->
+        <div class="bc-ql-list-view" id="bc-ql-list-view">
+            
+            <div class="bc-ql-list-header">
+                <h2 class="bc-ql-box-heading">Find a Property</h2>
+                <button class="bc-ql-close-btn" id="bc-ql-close-list" title="Close to view map">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                 </button>
             </div>
 
-            <!-- Distance Filter -->
-            <div class="bc-ql-distance-filter">
-                <div class="bc-ql-info-filter">
-                    <p class="bc-ql-first-info">Filter by radius from your location:</p>
-                    <p class="bc-ql-counting">— properties listed</p>
+            <!-- Filters -->
+            <div class="bc-ql-filters-container">
+                <!-- Search -->
+                <div class="bc-ql-search-box">
+                    <input class="bc-ql-name-filter" id="bc-ql-search-desktop" type="text" placeholder="Search by name…" autocomplete="off">
+                    <button class="bc-ql-icon-locate" id="bc-ql-locate-me" title="Detect my location" type="button">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/><line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/></svg>
+                    </button>
                 </div>
-                <div class="bc-ql-selection-filter swiper bc-ql-filter-swiper">
-                    <div class="swiper-wrapper">
-                        <div class="swiper-slide bc-ql-filter-option active">All</div>
-                        <div class="swiper-slide bc-ql-filter-option">5 km</div>
-                        <div class="swiper-slide bc-ql-filter-option">10 km</div>
-                        <div class="swiper-slide bc-ql-filter-option">20 km</div>
-                        <div class="swiper-slide bc-ql-filter-option">50 km</div>
+
+                <!-- Area Filter -->
+                <div class="bc-ql-area-filter-wrapper">
+                    <select id="bc-ql-area-select" class="bc-ql-select">
+                        <option value="all">All Areas</option>
+                        <option value="canggu">Canggu</option>
+                        <option value="nusa-penida">Nusa Penida</option>
+                        <option value="seminyak">Seminyak</option>
+                        <option value="ubud">Ubud</option>
+                        <option value="jimbaran">Jimbaran</option>
+                        <option value="sanur">Sanur</option>
+                        <option value="tabanan">Tabanan</option>
+                    </select>
+                    <svg class="bc-ql-select-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </div>
+
+                <!-- Distance Filter -->
+                <div class="bc-ql-distance-filter">
+                    <div class="bc-ql-info-filter">
+                        <p class="bc-ql-first-info">Distance from your location:</p>
+                        <p class="bc-ql-counting">— properties</p>
+                    </div>
+                    <div class="bc-ql-selection-filter swiper bc-ql-filter-swiper">
+                        <div class="swiper-wrapper">
+                            <div class="swiper-slide bc-ql-filter-option active">All</div>
+                            <div class="swiper-slide bc-ql-filter-option">5 km</div>
+                            <div class="swiper-slide bc-ql-filter-option">10 km</div>
+                            <div class="swiper-slide bc-ql-filter-option">20 km</div>
+                            <div class="swiper-slide bc-ql-filter-option">50 km</div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -116,122 +129,120 @@
             <!-- Place Collection -->
             <div class="bc-ql-place-collection" id="bc-ql-place-collection">
 
-                <div class="bc-ql-place-box" data-lat="-8.6478" data-lng="115.1385">
+                <div class="bc-ql-place-box" data-lat="-8.6478" data-lng="115.1385" data-area="canggu">
                     <p class="bc-ql-placename">Theodosia Villa</p>
                     <p class="bc-ql-address">Canggu, Bali</p>
                     <div class="bc-ql-b-group">
-                        <a href="#" class="bc-ql-btn-primary">View Details</a>
-                        <a href="#" class="bc-ql-btn-secondary">Contact</a>
+                        <a href="#" class="bc-ql-btn-primary">Book</a>
+                        <button class="bc-ql-btn-secondary bc-ql-view-map-btn" type="button">View on Map</button>
                     </div>
                 </div>
 
-                <div class="bc-ql-place-box" data-lat="-8.7282" data-lng="115.5518">
+                <div class="bc-ql-place-box" data-lat="-8.7278" data-lng="115.5444" data-area="nusa-penida">
                     <p class="bc-ql-placename">Penida Green Palm Cottage</p>
                     <p class="bc-ql-address">Nusa Penida, Bali</p>
                     <div class="bc-ql-b-group">
-                        <a href="#" class="bc-ql-btn-primary">View Details</a>
-                        <a href="#" class="bc-ql-btn-secondary">Contact</a>
+                        <a href="#" class="bc-ql-btn-primary">Book</a>
+                        <button class="bc-ql-btn-secondary bc-ql-view-map-btn" type="button">View on Map</button>
                     </div>
                 </div>
 
-                <div class="bc-ql-place-box" data-lat="-8.7403" data-lng="115.5289">
+                <div class="bc-ql-place-box" data-lat="-8.7400" data-lng="115.5300" data-area="nusa-penida">
                     <p class="bc-ql-placename">The Aura Penida Hills</p>
                     <p class="bc-ql-address">Nusa Penida, Bali</p>
                     <div class="bc-ql-b-group">
-                        <a href="#" class="bc-ql-btn-primary">View Details</a>
-                        <a href="#" class="bc-ql-btn-secondary">Contact</a>
+                        <a href="#" class="bc-ql-btn-primary">Book</a>
+                        <button class="bc-ql-btn-secondary bc-ql-view-map-btn" type="button">View on Map</button>
                     </div>
                 </div>
 
-                <div class="bc-ql-place-box" data-lat="-8.6691" data-lng="115.1377">
+                <div class="bc-ql-place-box" data-lat="-8.6691" data-lng="115.1377" data-area="canggu">
                     <p class="bc-ql-placename">Sakya Villa Canggu</p>
                     <p class="bc-ql-address">Canggu, Bali</p>
                     <div class="bc-ql-b-group">
-                        <a href="#" class="bc-ql-btn-primary">View Details</a>
-                        <a href="#" class="bc-ql-btn-secondary">Contact</a>
+                        <a href="#" class="bc-ql-btn-primary">Book</a>
+                        <button class="bc-ql-btn-secondary bc-ql-view-map-btn" type="button">View on Map</button>
                     </div>
                 </div>
 
-                <div class="bc-ql-place-box" data-lat="-8.6962" data-lng="115.1724">
+                <div class="bc-ql-place-box" data-lat="-8.6913" data-lng="115.1682" data-area="seminyak">
                     <p class="bc-ql-placename">Palm Merah Villa</p>
                     <p class="bc-ql-address">Seminyak, Bali</p>
                     <div class="bc-ql-b-group">
-                        <a href="#" class="bc-ql-btn-primary">View Details</a>
-                        <a href="#" class="bc-ql-btn-secondary">Contact</a>
+                        <a href="#" class="bc-ql-btn-primary">Book</a>
+                        <button class="bc-ql-btn-secondary bc-ql-view-map-btn" type="button">View on Map</button>
                     </div>
                 </div>
 
-                <div class="bc-ql-place-box" data-lat="-8.5069" data-lng="115.2625">
+                <div class="bc-ql-place-box" data-lat="-8.3298" data-lng="115.0135" data-area="tabanan">
                     <p class="bc-ql-placename">Padangan Lodge</p>
-                    <p class="bc-ql-address">Munduk, Bali</p>
+                    <p class="bc-ql-address">Tabanan, Bali</p>
                     <div class="bc-ql-b-group">
-                        <a href="#" class="bc-ql-btn-primary">View Details</a>
-                        <a href="#" class="bc-ql-btn-secondary">Contact</a>
+                        <a href="#" class="bc-ql-btn-primary">Book</a>
+                        <button class="bc-ql-btn-secondary bc-ql-view-map-btn" type="button">View on Map</button>
                     </div>
                 </div>
 
-                <div class="bc-ql-place-box" data-lat="-8.6571" data-lng="115.2167">
+                <div class="bc-ql-place-box" data-lat="-8.6571" data-lng="115.1711" data-area="seminyak">
                     <p class="bc-ql-placename">Casa Residence</p>
-                    <p class="bc-ql-address">Kerobokan, Bali</p>
+                    <p class="bc-ql-address">Kerobokan (Seminyak), Bali</p>
                     <div class="bc-ql-b-group">
-                        <a href="#" class="bc-ql-btn-primary">View Details</a>
-                        <a href="#" class="bc-ql-btn-secondary">Contact</a>
+                        <a href="#" class="bc-ql-btn-primary">Book</a>
+                        <button class="bc-ql-btn-secondary bc-ql-view-map-btn" type="button">View on Map</button>
                     </div>
                 </div>
 
-                <div class="bc-ql-place-box" data-lat="-8.5069" data-lng="115.2622">
+                <div class="bc-ql-place-box" data-lat="-8.5069" data-lng="115.2625" data-area="ubud">
                     <p class="bc-ql-placename">Arida House Ubud</p>
                     <p class="bc-ql-address">Ubud, Bali</p>
                     <div class="bc-ql-b-group">
-                        <a href="#" class="bc-ql-btn-primary">View Details</a>
-                        <a href="#" class="bc-ql-btn-secondary">Contact</a>
+                        <a href="#" class="bc-ql-btn-primary">Book</a>
+                        <button class="bc-ql-btn-secondary bc-ql-view-map-btn" type="button">View on Map</button>
                     </div>
                 </div>
 
-                <div class="bc-ql-place-box" data-lat="-8.5100" data-lng="115.2580">
+                <div class="bc-ql-place-box" data-lat="-8.5100" data-lng="115.2580" data-area="ubud">
                     <p class="bc-ql-placename">Elbe Homestay Ubud</p>
                     <p class="bc-ql-address">Ubud, Bali</p>
                     <div class="bc-ql-b-group">
-                        <a href="#" class="bc-ql-btn-primary">View Details</a>
-                        <a href="#" class="bc-ql-btn-secondary">Contact</a>
+                        <a href="#" class="bc-ql-btn-primary">Book</a>
+                        <button class="bc-ql-btn-secondary bc-ql-view-map-btn" type="button">View on Map</button>
                     </div>
                 </div>
 
-                <div class="bc-ql-place-box" data-lat="-8.8428" data-lng="115.1699">
+                <div class="bc-ql-place-box" data-lat="-8.7735" data-lng="115.1706" data-area="jimbaran">
                     <p class="bc-ql-placename">Villa Tentram Jimbaran</p>
                     <p class="bc-ql-address">Jimbaran, Bali</p>
                     <div class="bc-ql-b-group">
-                        <a href="#" class="bc-ql-btn-primary">View Details</a>
-                        <a href="#" class="bc-ql-btn-secondary">Contact</a>
+                        <a href="#" class="bc-ql-btn-primary">Book</a>
+                        <button class="bc-ql-btn-secondary bc-ql-view-map-btn" type="button">View on Map</button>
                     </div>
                 </div>
 
-                <div class="bc-ql-place-box" data-lat="-8.6815" data-lng="115.2619">
+                <div class="bc-ql-place-box" data-lat="-8.6750" data-lng="115.2625" data-area="sanur">
                     <p class="bc-ql-placename">Villa Rose</p>
                     <p class="bc-ql-address">Sanur, Bali</p>
                     <div class="bc-ql-b-group">
-                        <a href="#" class="bc-ql-btn-primary">View Details</a>
-                        <a href="#" class="bc-ql-btn-secondary">Contact</a>
+                        <a href="#" class="bc-ql-btn-primary">Book</a>
+                        <button class="bc-ql-btn-secondary bc-ql-view-map-btn" type="button">View on Map</button>
                     </div>
                 </div>
 
             </div><!-- /.bc-ql-place-collection -->
-        </div><!-- /.bc-ql-interactive-box -->
+        </div><!-- /.bc-ql-list-view -->
 
-        <!-- "Show map" button (bottom of mobile list) -->
-        <div class="bc-ql-global-map" id="bc-ql-show-map">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>
-            Show Map
+        <!-- Map Area -->
+        <div class="bc-ql-map-view">
+            <div class="bc-ql-map-canvas" id="bc-ql-mapbox"></div>
+            
+            <!-- Reopen Modal Button -->
+            <button class="bc-ql-fab-find" id="bc-ql-reopen-list" type="button">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                Find Property
+            </button>
         </div>
 
     </section><!-- /.bc-ql-maps -->
-
-    <!-- "Show list" floating button (mobile only) -->
-    <button class="bc-ql-show-list" id="bc-ql-show-list" type="button">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
-        Show List
-    </button>
-
 
     <!-- ============================================================
          Scripts

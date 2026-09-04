@@ -1,21 +1,7 @@
 /**
  * ============================================================
  * BALI CABIN — QUICK LINKS MAP PAGE
- * main.js — PREFIX: bcQl (for JS vars) / bc-ql- (for DOM)
- *
- * Features (1:1 with robinl201.sg-host.com map_certified):
- *  1. Leaflet.js map (OSM / CARTO Positron tiles, free)
- *  2. Custom SVG markers per property
- *  3. Geocoding via lat/lng (from data-lat / data-lng attrs)
- *  4. Text search (name + area filter)
- *  5. Distance/radius filter (All / 5 / 10 / 20 / 50 km)
- *  6. Geolocation "Detect me"
- *  7. Click place_box → fly map to marker + open popup
- *  8. Click marker → scroll sidebar to place_box
- *  9. Swiper pill filter (mobile swipeable)
- * 10. Mobile bottom-sheet toggle (Show List / Show Map)
- * 11. Custom cursor + magnetic action cards (desktop)
- * 12. Scroll-into-view on box click (mobile)
+ * main.js — PREFIX: bcQl
  * ============================================================
  */
 
@@ -23,7 +9,7 @@
    MAP STATE
    ────────────────────────────────────────────────────────── */
 let bcQlMap = null;
-let bcQlMarkers = [];       // one Leaflet marker per place_box
+let bcQlMarkers = [];
 let bcQlUserLocation = null;
 let bcQlSearchedLocation = null;
 let bcQlSearchDebounce = null;
@@ -36,9 +22,6 @@ function bcQlGetBoxes() {
     return Array.from(document.querySelectorAll('.bc-ql-place-box'));
 }
 
-/**
- * Show / hide a place-box + its matching marker.
- */
 function bcQlSetBoxVisible(box, index, show) {
     box.style.display = show ? '' : 'none';
     const marker = bcQlMarkers[index];
@@ -50,9 +33,6 @@ function bcQlSetBoxVisible(box, index, show) {
     }
 }
 
-/**
- * Update the "N properties listed" counter.
- */
 function bcQlUpdateCount() {
     const boxes = bcQlGetBoxes();
     const visible = boxes.filter(b => b.style.display !== 'none').length;
@@ -61,9 +41,6 @@ function bcQlUpdateCount() {
     });
 }
 
-/**
- * Haversine distance (km) between two L.LatLng.
- */
 function bcQlHaversine(a, b) {
     const R = 6371;
     const dLat = (b.lat - a.lat) * Math.PI / 180;
@@ -83,14 +60,19 @@ function bcQlHaversine(a, b) {
 function bcQlApplyFilters() {
     const boxes = bcQlGetBoxes();
     const searchVal = (document.getElementById('bc-ql-search-desktop')?.value || '').toLowerCase().trim();
+    const areaVal = document.getElementById('bc-ql-area-select')?.value || 'all';
     const center = bcQlSearchedLocation || bcQlUserLocation;
 
     boxes.forEach((box, i) => {
         const name = (box.querySelector('.bc-ql-placename')?.textContent || '').toLowerCase();
         const addr = (box.querySelector('.bc-ql-address')?.textContent || '').toLowerCase();
+        const boxArea = box.dataset.area || 'all';
 
         // Text filter
         const textOk = !searchVal || name.includes(searchVal) || addr.includes(searchVal);
+
+        // Area filter
+        const areaOk = areaVal === 'all' || boxArea === areaVal;
 
         // Radius filter
         let radiusOk = true;
@@ -99,21 +81,19 @@ function bcQlApplyFilters() {
             radiusOk = dist <= bcQlActiveFilterKm;
         }
 
-        bcQlSetBoxVisible(box, i, textOk && radiusOk);
+        bcQlSetBoxVisible(box, i, textOk && areaOk && radiusOk);
     });
 
     bcQlUpdateCount();
 }
 
 function bcQlFilterByText(term) {
-    bcQlActiveFilterKm = 'all'; // reset radius when text-filtering
-    // reset pill UIs
+    bcQlActiveFilterKm = 'all'; 
     document.querySelectorAll('.bc-ql-filter-option').forEach(o => o.classList.remove('active'));
     document.querySelectorAll('.bc-ql-filter-option')[0]?.classList.add('active');
 
     bcQlApplyFilters();
 
-    // Pan to first visible marker
     const boxes = bcQlGetBoxes();
     for (let i = 0; i < boxes.length; i++) {
         if (boxes[i].style.display !== 'none' && bcQlMarkers[i]) {
@@ -124,27 +104,18 @@ function bcQlFilterByText(term) {
 }
 
 /* ──────────────────────────────────────────────────────────
-   FOCUS (click on box or marker)
+   TOGGLE LIST VIEW
    ────────────────────────────────────────────────────────── */
-function bcQlFocusLocation(index) {
-    const boxes = bcQlGetBoxes();
-    const marker = bcQlMarkers[index];
-    if (!marker) return;
-
-    // Highlight active box
-    boxes.forEach(b => b.classList.remove('active'));
-    boxes[index]?.classList.add('active');
-
-    // Fly map
-    const zoom = 13;
-    const isMobile = window.innerWidth <= 768;
-
-    if (isMobile) {
-        const OFFSET_PX = 130;
-        const targetPt = bcQlMap.project(marker.getLatLng(), zoom).subtract([0, OFFSET_PX]);
-        bcQlMap.setView(bcQlMap.unproject(targetPt, zoom), zoom, { animate: false });
+function bcQlToggleListView(close) {
+    const mapsSection = document.querySelector('.bc-ql-maps');
+    if (close) {
+        mapsSection.classList.add('bc-ql-list-closed');
     } else {
-        bcQlMap.setView(marker.getLatLng(), zoom, { animate: false });
+        mapsSection.classList.remove('bc-ql-list-closed');
+    }
+    // Desktop only: recalculate map size after sidebar slides
+    if (window.innerWidth > 991) {
+        setTimeout(() => bcQlMap.invalidateSize(), 450);
     }
 }
 
@@ -152,7 +123,6 @@ function bcQlFocusLocation(index) {
    CUSTOM MARKER
    ────────────────────────────────────────────────────────── */
 function bcQlMakeIcon() {
-    // Inline SVG pin in Bali Cabin green — no external assets needed
     const svg = `
         <svg xmlns="http://www.w3.org/2000/svg" width="36" height="48" viewBox="0 0 36 48">
           <path fill="#0b3829" d="M18 0C8.059 0 0 8.059 0 18c0 12.75 18 30 18 30s18-17.25 18-30C36 8.059 27.941 0 18 0z"/>
@@ -166,6 +136,35 @@ function bcQlMakeIcon() {
         iconAnchor: [18, 48],
         popupAnchor: [0, -50]
     });
+}
+
+/* ──────────────────────────────────────────────────────────
+   GO TO MARKER — safe pan without blank canvas
+   ────────────────────────────────────────────────────────── */
+function bcQlGoToMarker(marker, index, delay) {
+    const latlng = marker.getLatLng();
+    const boxes  = bcQlGetBoxes();
+
+    boxes.forEach((b, i) => b.classList.toggle('active', i === index));
+
+    const run = () => {
+        const isMobile = window.innerWidth <= 991;
+        if (isMobile) {
+            // NO animation on mobile — animation + popup at same time kills canvas
+            bcQlMap.setZoom(14, { animate: false });
+            bcQlMap.panTo(latlng, { animate: false });
+            setTimeout(() => marker.openPopup(), 50);
+        } else {
+            bcQlMap.flyTo(latlng, 14, { duration: 0.8 });
+            bcQlMap.once('moveend', () => marker.openPopup());
+        }
+    };
+
+    if (delay > 0) {
+        setTimeout(run, delay);
+    } else {
+        run();
+    }
 }
 
 /* ──────────────────────────────────────────────────────────
@@ -187,42 +186,54 @@ function bcQlPlaceMarkers() {
         marker.addTo(bcQlMap);
         bcQlMarkers[index] = marker;
 
-        // Popup content
+        // Popup content for marker
         const popupHTML = `
             <div class="bc-ql-map-popup">
                 <p class="bc-ql-popup-name">${name}</p>
                 <p class="bc-ql-popup-addr">${addr}</p>
                 <div class="bc-ql-b-group">
-                    <a class="bc-ql-btn-primary" href="#">View Details</a>
-                    <a class="bc-ql-btn-secondary" href="#">Contact</a>
+                    <a class="bc-ql-btn-primary" href="#">Booking</a>
+                    <a class="bc-ql-btn-secondary" href="#">View Details</a>
                 </div>
             </div>`;
-        marker.bindPopup(popupHTML, { maxWidth: 260 });
+        // autoPan:false prevents Leaflet's second internal pan fighting our own pan
+        marker.bindPopup(popupHTML, { maxWidth: 280, autoPan: false });
 
-        // Marker click → highlight list + open popup
+        // ── Marker pin clicked directly on map ──
         marker.on('click', () => {
-            bcQlFocusLocation(index);
-            marker.openPopup();
-            // Scroll box into view (sidebar list)
+            bcQlGoToMarker(marker, index, 0);
             if (box.offsetParent !== null) {
                 box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
             }
         });
 
-        // Box click → fly + open popup
-        box.addEventListener('click', () => {
-            bcQlFocusLocation(index);
-            marker.openPopup();
+        // ── "View on Map" button in list card ──
+        const btnViewMap = box.querySelector('.bc-ql-view-map-btn');
+        if (btnViewMap) {
+            btnViewMap.addEventListener('click', (e) => {
+                e.stopPropagation();
+                bcQlToggleListView(true);
+                setTimeout(() => {
+                    bcQlMap.invalidateSize();
+                    bcQlGoToMarker(marker, index, 30);
+                }, 460);
+            });
+        }
 
-            // On mobile: collapse the bottom sheet back to map
-            const sheet = document.querySelector('.bc-ql-interactive-box');
-            if (sheet && window.innerWidth <= 768) {
-                sheet.classList.remove('bc-ql-active');
+        // ── List card clicked ──
+        box.addEventListener('click', () => {
+            if (window.innerWidth <= 991) {
+                bcQlToggleListView(true);
+                setTimeout(() => {
+                    bcQlMap.invalidateSize();
+                    bcQlGoToMarker(marker, index, 30);
+                }, 460);
+            } else {
+                bcQlGoToMarker(marker, index, 0);
             }
         });
     });
 
-    // Initial count
     bcQlUpdateCount();
 }
 
@@ -230,43 +241,36 @@ function bcQlPlaceMarkers() {
    INIT MAP
    ────────────────────────────────────────────────────────── */
 function bcQlInitMap() {
-    const isMobile = window.innerWidth <= 768;
-
     bcQlMap = L.map('bc-ql-mapbox', {
-        center: [-8.6478, 115.1385], // Canggu, Bali
-        zoom: isMobile ? 9 : 10,
+        center: [-8.5, 115.2], // Centered in Bali
+        zoom: 10,
         zoomControl: true,
-        scrollWheelZoom: false,
+        scrollWheelZoom: true, // Enabled for smoother experience
         dragging: true,
         touchZoom: true,
         doubleClickZoom: true
     });
 
-    // CARTO Positron — clean, muted style similar to the reference
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://carto.com/attributions">CARTO</a>',
         subdomains: 'abcd',
         maxZoom: 19
     }).addTo(bcQlMap);
 
-    // Enable scroll/drag only when user clicks inside map area
-    document.addEventListener('click', function (e) {
-        const mapEl = document.getElementById('bc-ql-mapbox');
-        const inside = mapEl.contains(e.target);
-        ['scrollWheelZoom', 'dragging', 'touchZoom', 'doubleClickZoom'].forEach(h => {
-            bcQlMap[h][inside ? 'enable' : 'disable']();
-        });
-    });
+    // Smoother animation settings
+    bcQlMap.zoomControl.setPosition('bottomright');
 
     bcQlPlaceMarkers();
+    
+    // Slight delay to ensure flex layout is calculated
+    setTimeout(() => bcQlMap.invalidateSize(), 100);
 }
 
 /* ──────────────────────────────────────────────────────────
-   SWIPER — Filter Pills
+   SWIPER
    ────────────────────────────────────────────────────────── */
 function bcQlInitFilterSwiper() {
     let swiper = null;
-
     function init() {
         if (window.innerWidth <= 768 && !swiper) {
             swiper = new Swiper('.bc-ql-filter-swiper', {
@@ -280,18 +284,15 @@ function bcQlInitFilterSwiper() {
             swiper = null;
         }
     }
-
     init();
     window.addEventListener('resize', init);
 }
 
-
 /* ──────────────────────────────────────────────────────────
-   MAGNETIC EFFECT — Action Cards
+   MAGNETIC
    ────────────────────────────────────────────────────────── */
 function bcQlInitMagnetic() {
     if (!window.matchMedia('(pointer: fine)').matches) return;
-
     document.querySelectorAll('.bc-ql-magnetic').forEach(el => {
         el.addEventListener('mousemove', e => {
             const r = el.getBoundingClientRect();
@@ -299,43 +300,37 @@ function bcQlInitMagnetic() {
             const y = e.clientY - r.top - r.height / 2;
             el.style.transform = `translate(${x * 0.16}px, ${y * 0.16}px) scale(1.04)`;
         });
-        el.addEventListener('mouseleave', () => {
-            el.style.transform = '';
-        });
+        el.addEventListener('mouseleave', () => el.style.transform = '');
     });
 }
 
 /* ──────────────────────────────────────────────────────────
-   MAIN — DOMContentLoaded
+   MAIN
    ────────────────────────────────────────────────────────── */
 document.addEventListener('DOMContentLoaded', () => {
 
-    /* ── Map ── */
     bcQlInitMap();
-
-    /* ── Swiper ── */
     bcQlInitFilterSwiper();
-
-    /* ── Magnetic ── */
     bcQlInitMagnetic();
 
-    /* ── Distance filter pills ── */
+    /* ── Area Filter ── */
+    document.getElementById('bc-ql-area-select')?.addEventListener('change', () => {
+        bcQlApplyFilters();
+    });
+
+    /* ── Distance Filter ── */
     document.querySelectorAll('.bc-ql-filter-option').forEach(option => {
         option.addEventListener('click', function () {
             document.querySelectorAll('.bc-ql-filter-option').forEach(o => o.classList.remove('active'));
             this.classList.add('active');
 
             const txt = this.textContent.trim().toLowerCase();
-            if (txt === 'all') {
-                bcQlActiveFilterKm = 'all';
-            } else {
-                bcQlActiveFilterKm = parseInt(txt);
-            }
+            bcQlActiveFilterKm = (txt === 'all') ? 'all' : parseInt(txt);
             bcQlApplyFilters();
         });
     });
 
-    /* ── Search input ── */
+    /* ── Search Input ── */
     const searchInput = document.getElementById('bc-ql-search-desktop');
     if (searchInput) {
         searchInput.addEventListener('input', e => {
@@ -343,10 +338,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const term = e.target.value.trim();
             bcQlSearchDebounce = setTimeout(() => {
                 if (!term) {
-                    // Reset: show all
-                    bcQlGetBoxes().forEach((b, i) => bcQlSetBoxVisible(b, i, true));
-                    bcQlUpdateCount();
-                    bcQlMap.setView([-8.6478, 115.1385], 10, { animate: false });
+                    bcQlApplyFilters(); // re-apply area & distance
                 } else {
                     bcQlFilterByText(term);
                 }
@@ -359,47 +351,32 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!navigator.geolocation) return;
         navigator.geolocation.getCurrentPosition(pos => {
             bcQlUserLocation = L.latLng(pos.coords.latitude, pos.coords.longitude);
-            bcQlMap.setView(bcQlUserLocation, 12, { animate: false });
+            bcQlMap.setView(bcQlUserLocation, 12, { animate: true, duration: 1 });
 
-            // Show user dot
             if (!window.bcQlUserDot) {
                 window.bcQlUserDot = L.circleMarker(bcQlUserLocation, {
                     radius: 9,
                     color: '#fff',
                     weight: 2,
-                    fillColor: '#4285F4',
+                    fillColor: '#2e9d6a',
                     fillOpacity: 1
                 }).addTo(bcQlMap).bindPopup('You are here');
             } else {
                 window.bcQlUserDot.setLatLng(bcQlUserLocation);
             }
-
             bcQlApplyFilters();
         }, () => {
-            alert('Could not detect your location. Please allow location access.');
+            alert('Could not detect your location.');
         });
     });
 
-    /* ── Mobile: Show List / Show Map toggles ── */
-    const sheet = document.querySelector('.bc-ql-interactive-box');
-    const showListBtn = document.getElementById('bc-ql-show-list');
-    const showMapBtn  = document.getElementById('bc-ql-show-map');
-    const dropToggle  = document.getElementById('bc-ql-dropdown-toggle');
-
-    function bcQlOpenSheet() {
-        sheet?.classList.add('bc-ql-active');
-    }
-    function bcQlCloseSheet() {
-        sheet?.classList.remove('bc-ql-active');
-    }
-
-    showListBtn?.addEventListener('click', bcQlOpenSheet);
-    showMapBtn?.addEventListener('click', bcQlCloseSheet);
-    dropToggle?.addEventListener('click', () => {
-        if (sheet?.classList.contains('bc-ql-active')) {
-            bcQlCloseSheet();
-        } else {
-            bcQlOpenSheet();
-        }
+    /* ── UI Toggles ── */
+    document.getElementById('bc-ql-close-list')?.addEventListener('click', () => {
+        bcQlToggleListView(true);
     });
+
+    document.getElementById('bc-ql-reopen-list')?.addEventListener('click', () => {
+        bcQlToggleListView(false);
+    });
+
 });

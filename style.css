@@ -30,7 +30,7 @@
     --bc-ql-ease-out:     cubic-bezier(0.25, 1, 0.5, 1);
 
     --bc-ql-header-h:     220px; /* approx header height */
-    --bc-ql-sidebar-w:    380px;
+    --bc-ql-sidebar-w:    420px; /* expanded slightly for better UI */
 }
 
 /* ── Reset / Base ───────────────────────────────────────── */
@@ -48,7 +48,6 @@ body.bc-ql-body {
     -moz-osx-font-smoothing: grayscale;
     overflow-x: hidden;
 }
-
 
 /* ── Header ─────────────────────────────────────────────── */
 .bc-ql-header {
@@ -96,7 +95,7 @@ body.bc-ql-body {
     grid-template-columns: repeat(4, 1fr);
     gap: 12px;
     width: 100%;
-    max-width: 540px;
+    max-width: 560px;
 }
 
 .bc-ql-action-card {
@@ -121,6 +120,7 @@ body.bc-ql-body {
     background: rgba(255,255,255,.12);
     border-color: rgba(255,255,255,.35);
     box-shadow: 0 8px 24px rgba(0,0,0,.25);
+    transform: translateY(-2px);
 }
 
 .bc-ql-action-icon {
@@ -155,65 +155,81 @@ body.bc-ql-body {
     to { opacity: 1; transform: translateY(0); }
 }
 
-/* ── Map Section ─────────────────────────────────────────── */
+/* ── Map Section Container ──────────────────────────────── */
 .bc-ql-maps {
     position: relative;
     display: flex;
     height: calc(100vh - var(--bc-ql-header-h));
     min-height: 520px;
     overflow: hidden;
+    background: var(--bc-ql-white);
 }
 
-/* Leaflet canvas */
-.bc-ql-map-canvas {
-    flex: 1;
-    min-width: 0;
-    z-index: 1;
-    background: #e8f0ea;
-}
-
-/* ── Sidebar (Desktop) ─────────────────────────────────── */
-.bc-ql-interactive-box {
-    position: relative;
+/* ── List View (Sidebar Desktop, Full Mobile) ───────────── */
+.bc-ql-list-view {
     width: var(--bc-ql-sidebar-w);
+    margin-left: 0;
     flex-shrink: 0;
     background: var(--bc-ql-white);
     display: flex;
     flex-direction: column;
-    z-index: 10;
-    box-shadow: -4px 0 32px rgba(0,0,0,.12);
-    overflow: hidden;
+    z-index: 20;
+    box-shadow: 4px 0 32px rgba(0,0,0,.12);
+    transition: margin-left 0.4s var(--bc-ql-ease-spring), 
+                transform 0.4s var(--bc-ql-ease-spring),
+                opacity 0.4s var(--bc-ql-ease-spring),
+                visibility 0.4s var(--bc-ql-ease-spring);
+}
+
+.bc-ql-maps.bc-ql-list-closed .bc-ql-list-view {
+    margin-left: calc(-1 * var(--bc-ql-sidebar-w));
+}
+
+.bc-ql-list-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 22px 24px 18px;
+    border-bottom: 1px solid var(--bc-ql-border);
+    flex-shrink: 0;
+    background: var(--bc-ql-white);
 }
 
 .bc-ql-box-heading {
     font-family: 'Cinzel', serif;
-    font-size: 15px;
-    font-weight: 500;
+    font-size: 16px;
+    font-weight: 600;
     letter-spacing: .06em;
     color: var(--bc-ql-text-dark);
-    padding: 22px 24px 18px;
-    border-bottom: 1px solid var(--bc-ql-border);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-shrink: 0;
-    background: var(--bc-ql-white);
-    position: sticky;
-    top: 0;
-    z-index: 5;
 }
 
-.bc-ql-dropdown-toggle {
-    display: none; /* shown mobile only */
-    width: 28px; height: 28px;
+.bc-ql-close-btn {
+    background: transparent;
+    border: none;
+    color: var(--bc-ql-text-muted);
+    cursor: pointer;
+    width: 32px; height: 32px;
+    display: flex;
     align-items: center;
     justify-content: center;
-    cursor: pointer;
-    transition: transform .3s var(--bc-ql-ease-out);
+    border-radius: 50%;
+    transition: background 0.2s, color 0.2s;
 }
-.bc-ql-dropdown-toggle svg {
+
+.bc-ql-close-btn:hover {
+    background: #f1f5f2;
+    color: var(--bc-ql-text-dark);
+}
+
+.bc-ql-close-btn svg {
     width: 20px; height: 20px;
-    color: var(--bc-ql-text-mid);
+}
+
+/* Filters Container */
+.bc-ql-filters-container {
+    flex-shrink: 0;
+    border-bottom: 1px solid var(--bc-ql-border);
+    background: var(--bc-ql-white);
 }
 
 /* Search Row */
@@ -221,17 +237,14 @@ body.bc-ql-body {
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 14px 16px;
-    border-bottom: 1px solid var(--bc-ql-border);
-    flex-shrink: 0;
-    background: var(--bc-ql-white);
+    padding: 14px 16px 8px;
 }
 
 .bc-ql-name-filter {
     flex: 1;
     border: 1.5px solid var(--bc-ql-border);
     border-radius: var(--bc-ql-radius-sm);
-    padding: 9px 14px;
+    padding: 10px 14px;
     font-family: inherit;
     font-size: 13px;
     color: var(--bc-ql-text-dark);
@@ -247,43 +260,71 @@ body.bc-ql-body {
 
 .bc-ql-name-filter::placeholder { color: var(--bc-ql-text-muted); }
 
-.bc-ql-icon-locate,
-.bc-ql-icon-search {
-    width: 36px; height: 36px;
-    border: none;
+.bc-ql-icon-locate {
+    width: 40px; height: 40px;
+    border: 1.5px solid var(--bc-ql-border);
     border-radius: var(--bc-ql-radius-sm);
-    background: #f1f5f2;
+    background: #f8fbf9;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: background .25s;
+    transition: background .25s, border-color .25s;
     flex-shrink: 0;
 }
 
-.bc-ql-icon-locate:hover,
-.bc-ql-icon-search:hover {
-    background: var(--bc-ql-green-accent);
+.bc-ql-icon-locate:hover {
+    border-color: var(--bc-ql-green-accent);
+    background: #e8f4ef;
 }
 
-.bc-ql-icon-locate svg,
-.bc-ql-icon-search svg {
+.bc-ql-icon-locate svg {
+    width: 18px; height: 18px;
+    color: var(--bc-ql-green-accent);
+}
+
+/* Area Filter */
+.bc-ql-area-filter-wrapper {
+    padding: 0 16px 14px;
+    position: relative;
+}
+
+.bc-ql-select {
+    width: 100%;
+    appearance: none;
+    -webkit-appearance: none;
+    border: 1.5px solid var(--bc-ql-border);
+    border-radius: var(--bc-ql-radius-sm);
+    padding: 10px 14px;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--bc-ql-text-dark);
+    background: #f8fbf9;
+    cursor: pointer;
+    outline: none;
+    transition: border-color .25s, box-shadow .25s;
+}
+
+.bc-ql-select:focus {
+    border-color: var(--bc-ql-green-accent);
+    box-shadow: 0 0 0 3px rgba(46,157,106,.12);
+}
+
+.bc-ql-select-icon {
+    position: absolute;
+    right: 30px;
+    top: 50%;
+    transform: translateY(-50%) translateY(-7px);
     width: 16px; height: 16px;
-    color: var(--bc-ql-text-mid);
-    transition: color .25s;
-}
-
-.bc-ql-icon-locate:hover svg,
-.bc-ql-icon-search:hover svg {
-    color: #fff;
+    color: var(--bc-ql-text-muted);
+    pointer-events: none;
 }
 
 /* Distance Filter */
 .bc-ql-distance-filter {
     padding: 14px 16px;
-    border-bottom: 1px solid var(--bc-ql-border);
-    flex-shrink: 0;
-    background: var(--bc-ql-white);
+    border-top: 1px dashed var(--bc-ql-border);
 }
 
 .bc-ql-info-filter {
@@ -340,14 +381,14 @@ body.bc-ql-body {
     color: var(--bc-ql-white);
 }
 
-/* Place List */
+/* ── Place List ─────────────────────────────────────────── */
 .bc-ql-place-collection {
     flex: 1;
     overflow-y: auto;
-    padding: 10px 12px;
+    padding: 14px 16px;
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 12px;
     scrollbar-width: thin;
     scrollbar-color: #c5d8cd transparent;
 }
@@ -361,7 +402,7 @@ body.bc-ql-body {
     background: #f8fbf9;
     border: 1.5px solid var(--bc-ql-border);
     border-radius: var(--bc-ql-radius-md);
-    padding: 14px 16px;
+    padding: 16px;
     cursor: pointer;
     transition: border-color .3s var(--bc-ql-ease-out),
                 box-shadow .3s var(--bc-ql-ease-out),
@@ -383,7 +424,7 @@ body.bc-ql-body {
 .bc-ql-place-box:hover,
 .bc-ql-place-box.active {
     border-color: var(--bc-ql-green-accent);
-    box-shadow: 0 6px 20px rgba(11,56,41,.15);
+    box-shadow: 0 6px 20px rgba(11,56,41,.12);
 }
 
 .bc-ql-place-box.active::before { opacity: 1; }
@@ -398,18 +439,18 @@ body.bc-ql-body {
 }
 
 .bc-ql-placename {
-    font-size: 13.5px;
+    font-size: 14px;
     font-weight: 700;
     color: var(--bc-ql-text-dark);
-    margin-bottom: 3px;
+    margin-bottom: 4px;
     line-height: 1.3;
     transition: color .25s;
 }
 
 .bc-ql-address {
-    font-size: 11.5px;
+    font-size: 12px;
     color: var(--bc-ql-text-muted);
-    margin-bottom: 10px;
+    margin-bottom: 14px;
     transition: color .25s;
 }
 
@@ -423,14 +464,16 @@ body.bc-ql-body {
     font-family: inherit;
     font-size: 11px;
     font-weight: 700;
-    padding: 6px 13px;
+    padding: 8px 16px;
     border-radius: 99px;
     text-decoration: none;
     letter-spacing: .04em;
     cursor: pointer;
     border: none;
     transition: transform .25s var(--bc-ql-ease-out),
-                box-shadow .25s var(--bc-ql-ease-out);
+                box-shadow .25s var(--bc-ql-ease-out),
+                background .25s var(--bc-ql-ease-out),
+                color .25s var(--bc-ql-ease-out);
     display: inline-block;
 }
 
@@ -442,7 +485,7 @@ body.bc-ql-body {
 .bc-ql-btn-secondary {
     background: transparent;
     color: var(--bc-ql-text-mid);
-    border: 1.5px solid currentColor;
+    border: 1.5px solid var(--bc-ql-text-mid);
 }
 
 .bc-ql-place-box.active .bc-ql-btn-primary {
@@ -451,70 +494,70 @@ body.bc-ql-body {
 }
 .bc-ql-place-box.active .bc-ql-btn-secondary {
     color: var(--bc-ql-white);
-    border-color: rgba(255,255,255,.5);
+    border-color: rgba(255,255,255,.6);
 }
 
 .bc-ql-btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,.2); }
 .bc-ql-btn-secondary:hover { transform: translateY(-2px); }
 
-/* "Show Map" button (bottom of mobile list) */
-.bc-ql-global-map {
-    display: none; /* mobile only */
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    padding: 14px 20px;
-    font-size: 13px;
-    font-weight: 700;
-    color: var(--bc-ql-text-mid);
-    border-top: 1px solid var(--bc-ql-border);
-    cursor: pointer;
-    background: var(--bc-ql-white);
-    transition: color .25s;
-    flex-shrink: 0;
+/* ── Map View ───────────────────────────────────────────── */
+.bc-ql-map-view {
+    flex: 1;
+    position: relative;
+    z-index: 10;
+    background: #e8f0ea;
 }
 
-.bc-ql-global-map:hover { color: var(--bc-ql-green-accent); }
-
-.bc-ql-global-map svg {
-    width: 18px; height: 18px;
+.bc-ql-map-canvas {
+    width: 100%;
+    height: 100%;
 }
 
-/* "Show List" FAB — mobile only */
-.bc-ql-show-list {
-    display: none; /* mobile only */
+/* Floating Find Property Button */
+.bc-ql-fab-find {
     position: fixed;
-    bottom: 24px;
+    bottom: 30px;
     left: 50%;
-    transform: translateX(-50%);
-    z-index: 50;
-    gap: 8px;
+    transform: translate3d(-50%, 100px, 0);
+    opacity: 0;
+    pointer-events: none;
+    z-index: 9999;
+    display: flex;
     align-items: center;
+    gap: 10px;
     background: var(--bc-ql-green-deep);
     color: var(--bc-ql-white);
-    border: none;
+    padding: 14px 28px;
     border-radius: 99px;
-    padding: 13px 24px;
     font-family: inherit;
     font-size: 14px;
     font-weight: 700;
     letter-spacing: .04em;
+    border: none;
     cursor: pointer;
-    box-shadow: 0 8px 28px rgba(0,0,0,.35);
-    transition: transform .3s var(--bc-ql-ease-out), box-shadow .3s;
+    box-shadow: 0 8px 32px rgba(11,56,41,0.35);
+    transition: transform 0.5s var(--bc-ql-ease-spring),
+                opacity 0.5s var(--bc-ql-ease-spring),
+                box-shadow 0.3s;
 }
 
-.bc-ql-show-list:hover {
-    transform: translateX(-50%) translateY(-3px);
-    box-shadow: 0 14px 36px rgba(0,0,0,.4);
+.bc-ql-fab-find:hover {
+    box-shadow: 0 12px 40px rgba(11,56,41,0.45);
+    transform: translate3d(-50%, -2px, 0) !important;
 }
 
-.bc-ql-show-list svg {
+.bc-ql-fab-find svg {
     width: 18px; height: 18px;
-    flex-shrink: 0;
 }
 
-/* ── Leaflet overrides (scoped via wrapper) ─────────────── */
+/* Show FAB when List is Closed */
+.bc-ql-maps.bc-ql-list-closed .bc-ql-fab-find {
+    transform: translate3d(-50%, 0, 0);
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* ── Leaflet overrides ──────────────────────────────────── */
 .bc-ql-map-canvas .leaflet-container {
     font-family: 'Plus Jakarta Sans', sans-serif;
 }
@@ -528,34 +571,32 @@ body.bc-ql-body {
 
 .bc-ql-map-canvas .leaflet-popup-content {
     margin: 0;
-    width: 240px !important;
+    width: 260px !important;
 }
 
 .bc-ql-map-popup {
-    padding: 16px;
+    padding: 20px;
 }
 
 .bc-ql-map-popup .bc-ql-popup-name {
-    font-size: 14px;
+    font-size: 15px;
     font-weight: 700;
     color: var(--bc-ql-text-dark);
     margin-bottom: 4px;
 }
 
 .bc-ql-map-popup .bc-ql-popup-addr {
-    font-size: 12px;
+    font-size: 13px;
     color: var(--bc-ql-text-muted);
-    margin-bottom: 12px;
+    margin-bottom: 16px;
 }
 
 .bc-ql-map-popup .bc-ql-b-group {
-    gap: 6px;
+    gap: 8px;
 }
 
-/* ── MOBILE (<= 768px) ─────────────────────────────────── */
-@media (max-width: 768px) {
-    body.bc-ql-body { cursor: auto; }
-
+/* ── MOBILE & TABLET (<= 991px) ─────────────────────────── */
+@media (max-width: 991px) {
     :root {
         --bc-ql-header-h: 185px;
     }
@@ -571,61 +612,33 @@ body.bc-ql-body {
     .bc-ql-action-card { padding: 14px 4px; border-radius: var(--bc-ql-radius-sm); }
     .bc-ql-action-text { font-size: 9.5px; }
 
-    /* Map section becomes full-screen */
     .bc-ql-maps {
         height: calc(100svh - var(--bc-ql-header-h));
-        position: relative;
-        display: block;
+        display: block; /* Disable flex to avoid layout collapse */
     }
 
-    .bc-ql-map-canvas {
+    .bc-ql-map-view {
         position: absolute;
         inset: 0;
-        z-index: 1;
-    }
-
-    /* Sidebar becomes bottom-sheet */
-    .bc-ql-interactive-box {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
         width: 100%;
-        height: auto;
-        max-height: 75svh;
-        border-radius: var(--bc-ql-radius-lg) var(--bc-ql-radius-lg) 0 0;
-        box-shadow: 0 -8px 40px rgba(0,0,0,.2);
-        z-index: 20;
-        transform: translateY(calc(100% - 70px)); /* peeking state */
-        transition: transform .5s var(--bc-ql-ease-spring);
+        height: 100%;
     }
 
-    .bc-ql-interactive-box.bc-ql-active {
-        transform: translateY(0);
+    /* List view takes FULL screen on mobile, overlays map entirely */
+    .bc-ql-list-view {
+        width: 100%;
+        margin-left: 0;
+        position: absolute;
+        inset: 0;
+        z-index: 30;
     }
 
-    .bc-ql-box-heading {
-        padding: 16px 20px 14px;
-        font-size: 14px;
-    }
-
-    /* Show toggle caret on mobile */
-    .bc-ql-dropdown-toggle { display: flex; }
-
-    .bc-ql-interactive-box.bc-ql-active .bc-ql-dropdown-toggle {
-        transform: rotate(180deg);
-    }
-
-    /* Show list & show map buttons */
-    .bc-ql-show-list { display: flex; }
-
-    /* When bottom sheet is open, hide the FAB */
-    .bc-ql-interactive-box.bc-ql-active ~ .bc-ql-show-list {
+    .bc-ql-maps.bc-ql-list-closed .bc-ql-list-view {
+        margin-left: 0;
         opacity: 0;
         pointer-events: none;
+        visibility: hidden;
     }
-
-    .bc-ql-global-map { display: flex; }
 }
 
 /* ── Tiny screens ───────────────────────────────────────── */
